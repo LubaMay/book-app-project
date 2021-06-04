@@ -1,6 +1,6 @@
 import React from 'react'
 import * as BooksAPI from './BooksAPI'
-import { Link, Route, Router } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 import BooksSearch from './BooksSearch'
 import Books from './Books'
 import './App.css'
@@ -25,12 +25,24 @@ class BooksApp extends React.Component {
       })
   }
 
+  deleteBook = (book) => {
+    this.setState((currentState) => ({
+      books: currentState.books.filter(b => {
+        return b.id !== book.id
+      })
+    }))
+  }
+
   onUpdateShelf = (book, shelf, newOrUpdate) => {
     BooksAPI.update(book, shelf)
       .then((res) => {
         console.log("result", res)
 
-        if (newOrUpdate == "update") {
+        if (shelf === 'none') {
+          this.deleteBook(book)
+        }
+
+        if (newOrUpdate === "update") {
           this.setState((prevState) => ({
             books: prevState.books.map(book => {
               for (shelf in res) {
@@ -60,12 +72,11 @@ class BooksApp extends React.Component {
         )}>
         </Route>
 
-        <Route path='/search' render={({ history }) => (
+        <Route path='/search' render={() => (
           <BooksSearch
             books={this.state.books}
             updateShelf={(book, shelf) => {
               this.onUpdateShelf(book, shelf, "new")
-              history.push('/')
             }}
           />
         )}
