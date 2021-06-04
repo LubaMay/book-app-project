@@ -18,7 +18,7 @@ The search page has a text input that may be used to find books.
 
 ## How to install and run an app
 
-1. Clone or download source code from Github - git clone [git@github.com:LubaMay/book-app-project.git]
+1. Clone or download source code from Github - git clone [git@github.com:LubaMay/book-app-project.git](git@github.com:LubaMay/book-app-project.git)
 2. Install the dependencies - npm install 
 3. Run - npm start
 
