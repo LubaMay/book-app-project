@@ -1,7 +1,4 @@
 import React, { Component } from 'react'
-import CurrentlyReadingShelf from './CurrentlyReadigShelf'
-import WantToReadShelf from './WantToReadShelf'
-import Read from './Read'
 import BookShelfChanger from './BookShelfChanger'
 import { Link } from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
@@ -22,11 +19,39 @@ class BooksSearch extends Component {
     }
 
     searchBook = (query) => {
+        this.setState({
+            query: query
+        })
         BooksAPI.search(query)
             .then((res) => {
+                console.log('result from search: ', res)
+
+                // We have 3 types of possible behavior on request-response
+                //
+                // 1 - is when res is undefined
+                // 2 - is when res has error parameter
+                // 3 - is when res is an array
+                if (typeof (res) === "undefined" || typeof (res.error) !== "undefined") {
+                    // if you want to render some error here
+                } else {
+
+                    res.map(bookInTheSearch => {
+                        this.props.books.map(bookInState => {
+                            const bookId = bookInState.id
+                            const bookShelf = bookInState.shelf
+
+                            if (bookInTheSearch.id === bookId) {
+                                bookInTheSearch.shelf = bookShelf
+                            }
+
+                        })
+                    })
+
+                }
+
                 this.setState({
-                    queryBooks: res,
-                    query: query
+                    queryBooks: res
+
                 })
             })
 
@@ -34,12 +59,16 @@ class BooksSearch extends Component {
 
     render() {
         const { query, showSearchPage, queryBooks } = this.state
-        let showingBooks = query === '' ? this.props.books : queryBooks
+        let showingBooks = query !== '' && queryBooks
         let errorMessage = ''
         if (!Array.isArray(showingBooks)) {
             showingBooks = []
             errorMessage = 'No such a book found'
         }
+
+        const placeHolder = "https://p.kindpng.com/picc/s/494-4945860_cartoon-book-with-blank-cover-printable-blank-book.png";
+
+
         return (
             <div className="app">
                 {showSearchPage && (
@@ -56,20 +85,18 @@ class BooksSearch extends Component {
                             </div>
                         </div>
                         <div className="search-books-results">
-                            {errorMessage && <h3 className="error"> {errorMessage} </h3>}
+                            {showingBooks.length === 0 && query !== '' && <h3 className="error"> {errorMessage} </h3>}
 
                             {showingBooks.map((book, id) =>
                                 <ol className="books-grid" key={id}>
                                     <li>
                                         <div className="book">
                                             <div className="book-top">
-                                                {book.imageLinks !== undefined ?
+                                                {
                                                     <div className="book-cover"
-                                                        style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}>
+                                                        style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks ? book.imageLinks.thumbnail : placeHolder})` }}>
                                                     </div>
-                                                    : <div className="book-cover"
-                                                        style={{ width: 128, height: 193, backgroundImage: `url(https://p.kindpng.com/picc/s/494-4945860_cartoon-book-with-blank-cover-printable-blank-book.png)` }}>
-                                                    </div>}
+                                                }
                                                 <BookShelfChanger
                                                     onUpdateShelf={this.updateShelf}
                                                     book={book} />
