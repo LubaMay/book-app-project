@@ -1,28 +1,28 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 import Shelves from './Shelves'
 import { Link } from 'react-router-dom'
 
-class Books extends Component {
+const Books = (props) => {
+    const { books, onUpdateShelf } = props
 
-    render() {
-        return (
-            <div className="list-books">
-                <div className="list-books-title">
-                    <h1>MyReads</h1>
-                </div>
-                <Shelves books={this.props.books} onUpdateShelf={this.props.onUpdateShelf} />
-
-                <Link to='/search'
-                    className="open-search"
-                >
-                    <button>Add a book</button>
-                </Link>
-
+    return (
+        <div className="list-books">
+            <div className="list-books-title">
+                <h1>MyReads</h1>
             </div>
-        )
+            <Shelves books={books} onUpdateShelf={onUpdateShelf} />
 
-    }
+            <Link to='/search'
+                className="open-search"
+            >
+                <button>Add a book</button>
+            </Link>
+
+        </div>
+    )
+
 }
+
 
 export default Books
